@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { collection } from "@firebase/firestore";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+import { db } from "./firebase";
+import ChildrenList from "./ChildrenList";
+import AddNew from "./AddNew";
 
-function App() {
+export default function App() {
+  const query = collection(db, "oses");
+  const [docs, loading, error] = useCollectionData(query);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Operating Systems</h1>
+
+      {loading && "Loading..."}
+
+      <ul>
+        {docs?.map((doc) => (
+          <div key={Math.random()}>
+            <li>{doc.name}</li>
+
+            <ChildrenList path={`oses/${doc.name}/children`} />
+          </div>
+        ))}
+        <AddNew path="oses" />
+      </ul>
     </div>
   );
 }
-
-export default App;
